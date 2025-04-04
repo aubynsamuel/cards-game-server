@@ -390,6 +390,21 @@ io.on("connection", (socket: Socket) => {
     }
   );
 
+  // Listener: Owner kicking player out of the room
+  socket.on("kick_player", ({ playerToKickId }: { playerToKickId: string }) => {
+    const playerToKickSocket = io.sockets.sockets.get(playerToKickId);
+    const roomId = socketRoomMap[socket.id];
+    const room = rooms[roomId];
+    const player = room.players.find((p) => p.id === playerToKickId);
+
+    if (!playerToKickSocket || room.ownerId !== socket.id) return;
+    handleDisconnect(playerToKickSocket);
+    io.to(playerToKickId).emit("player_kicked", {
+      message: `You have been kicked from the room`,
+    });
+    console.log(`${player?.name} has been kicked from room ${roomId}`);
+  });
+
   // Listener: Leave a room
   socket.on("leave_room", ({ roomId }: LeaveRoomPayload) => {
     if (socketRoomMap[socket.id] === roomId && rooms[roomId]) {
