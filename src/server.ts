@@ -61,8 +61,13 @@ function handleDisconnect(socket: Socket): void {
 
       const game = gameInstances[roomId];
       if (game) {
-        game.players = room.players;
-        console.log("Removed player from game", game.players.length);
+        const gamePlayerIndex = game.players.findIndex(
+          (p) => p.id === socket.id
+        );
+        if (gamePlayerIndex !== -1) {
+          game.players.splice(gamePlayerIndex, 1);
+          console.log("Removed player from game", game.players.length);
+        }
       } else console.log("Could not remove player");
 
       if (room.players.length === 0) {
@@ -76,9 +81,8 @@ function handleDisconnect(socket: Socket): void {
         io.to(roomId).emit("player_left", {
           userId: socket.id,
           playerName: leavingPlayer?.name || "User",
-          updatedPlayers: room.players,
+          updatedPlayers: game.players,
         });
-        console.log("Notified rest of players");
 
         // Handle ownership transfer if the owner left
         if (room.ownerId === socket.id && room.players.length > 0) {
