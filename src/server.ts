@@ -65,7 +65,12 @@ function handleDisconnect(socket: Socket): void {
           (p) => p.id === socket.id
         );
         if (gamePlayerIndex !== -1) {
+          if (game.currentControl.id === socket.id) {
+            game.currentControl = game.players[0];
+            io.to(roomId).emit("game_state_update", game.getState());
+          }
           game.players.splice(gamePlayerIndex, 1);
+
           console.log("Removed player from game", game.players.length);
         }
       } else console.log("Could not remove player");
