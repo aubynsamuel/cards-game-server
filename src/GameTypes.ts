@@ -52,6 +52,7 @@ interface CardsGameState {
   deck: Deck;
   gameOverData: GameOverData;
   gameTo: number;
+  playersToReconnect?: Player[];
 }
 
 interface GameOverData {

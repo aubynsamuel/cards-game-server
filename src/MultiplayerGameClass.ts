@@ -12,7 +12,7 @@ import {
   CardsGameState,
 } from "./GameTypes";
 
-class MultiplayerCardsGame {
+class MultiplayerCardsGame implements CardsGameState {
   players: Player[];
   currentPlays: Play[];
   currentLeadCard: Card | null;
@@ -35,6 +35,7 @@ class MultiplayerCardsGame {
   callbacks: Callbacks;
   gameOverData: GameOverData;
   gameTo: number;
+  playersToReconnect: Player[];
 
   constructor(players: Player[], gameTo: number) {
     if (players.length < 2) {
@@ -67,6 +68,7 @@ class MultiplayerCardsGame {
       isMultiPlayer: true,
     };
     this.gameTo = gameTo;
+    this.playersToReconnect = [];
   }
 
   // Register callbacks from the React component/websocket server
@@ -271,7 +273,10 @@ class MultiplayerCardsGame {
     });
 
     // If all players have played, finish the round.
-    if (newPlays.length === this.players.length) {
+    if (
+      this.currentPlays.length === this.players.length &&
+      this.currentPlays.length >= 2
+    ) {
       this.finishRound();
     } else {
       // We no longer enforce a strict next-player turn order.
@@ -379,11 +384,13 @@ class MultiplayerCardsGame {
       lastPlayedSuit: newLastPlayedSuit,
     });
 
+    const newRoundsPlayed = this.cardsPlayed + 1;
+    this.cardsPlayed = newRoundsPlayed > 5 ? 5 : newRoundsPlayed;
+
     setTimeout(() => {
       this.resetRound();
-      const newRoundsPlayed = this.cardsPlayed + 1;
       this.updateState({
-        cardsPlayed: newRoundsPlayed > 5 ? 5 : newRoundsPlayed,
+        cardsPlayed: this.cardsPlayed,
       });
 
       if (newRoundsPlayed >= 5) {
@@ -428,6 +435,10 @@ class MultiplayerCardsGame {
 
     if (!gameWinner) {
       setTimeout(() => {
+        if (this.playersToReconnect.length > 0 && this.players.length < 4) {
+          this.players = this.players.concat(this.playersToReconnect);
+          this.playersToReconnect = [];
+        }
         this.startGame();
       }, 3000);
     } else {

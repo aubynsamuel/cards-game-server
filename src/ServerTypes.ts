@@ -1,4 +1,4 @@
-import { Card, Player } from "./GameTypes";
+import { Card, CardsGameState, Player } from "./GameTypes";
 
 type RoomStatus = "waiting" | "playing" | "finished";
 
@@ -90,6 +90,12 @@ interface JoinRequest {
   roomId: string;
   timeoutId: NodeJS.Timeout;
 }
+interface ReconnectionData {
+  player: Player;
+  roomId: string;
+  timeOutId: NodeJS.Timeout;
+  gameSate: CardsGameState;
+}
 
 export {
   Room,
@@ -105,4 +111,5 @@ export {
   PlayerStatus,
   JoinRequest,
   Message,
+  ReconnectionData,
 };
