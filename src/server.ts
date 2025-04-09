@@ -282,26 +282,18 @@ function handleReconnection(savedId: string, socket: Socket): void {
           game.cardsPlayed === 5 - player.hands.length
         ) {
           console.log("Game State has not changed adding player directly");
-          if (game.currentControl.id === savedId) {
-            game.currentControl = player;
-          }
           game.players.push(player);
+          sendReconnectionResponse(socket, "success", "Reconnected");
         } else {
           console.log(
             "Game State has changed, player will be added in the next round"
           );
-          if (game.playersToReconnect.length + game.players.length < 4) {
-            game.playersToReconnect.push(player);
-            sendReconnectionResponse(
-              socket,
-              "success",
-              "Reconnected Waiting for next round"
-            );
-          } else {
-            sendReconnectionResponse(socket, "failed", "Game Is Full");
-            console.log("Reconnection Failed, game is full");
-            return;
-          }
+          game.playersToReconnect.push(player);
+          sendReconnectionResponse(
+            socket,
+            "success",
+            "Reconnected Waiting for next round"
+          );
         }
       }
 
