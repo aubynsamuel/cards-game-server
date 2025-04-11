@@ -86,7 +86,7 @@ function handleDisconnect(
           // shift lead card to next player or set to null
           if (
             game.currentLeadCard &&
-            game.currentPlays[0].player.id === socket.id
+            game.currentPlays[0].player.id === socket.id && room.players.length >= 2
           ) {
             game.currentLeadCard =
               game.currentPlays.length > 1 ? game.currentPlays[1].card : null;
@@ -98,7 +98,7 @@ function handleDisconnect(
             (p) => p.player.id === socket.id
           )?.card;
           // console.log("leavingPlayer played", cardPlayed?.suit);
-          if (cardPlayed) {
+          if (cardPlayed && room.players.length >= 2) {
             game.players[gamePlayerIndex].hands.push(cardPlayed);
             game.currentPlays = game.currentPlays.filter(
               (p) => p.player.id !== socket.id
