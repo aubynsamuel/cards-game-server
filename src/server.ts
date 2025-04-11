@@ -53,7 +53,7 @@ function handleDisconnect(
   socket: Socket,
   isIntentional: boolean = false
 ): void {
-  console.log("User disconnected:", socket.id);
+  // console.log("User disconnected:", socket.id);
   const roomId = socketRoomMap[socket.id];
   if (roomId && rooms[roomId]) {
     const room = rooms[roomId];
@@ -61,9 +61,9 @@ function handleDisconnect(
 
     if (playerIndex !== -1) {
       const leavingPlayer = room.players.splice(playerIndex, 1)[0];
-      console.log(
-        `${leavingPlayer?.name || "User"} (${socket.id}) left ${roomId}`
-      );
+      // console.log(
+      //   `${leavingPlayer?.name || "User"} (${socket.id}) left ${roomId}`
+      // );
 
       delete socketRoomMap[socket.id];
 
@@ -82,7 +82,7 @@ function handleDisconnect(
             //  transfer current control to next player
             game.currentControl =
               game.players[(gamePlayerIndex + 1) % game.players.length];
-            console.log("Current Control Transferred");
+            // console.log("Current Control Transferred");
           }
           // shift lead card to next player or set to null
           if (
@@ -91,32 +91,32 @@ function handleDisconnect(
           ) {
             game.currentLeadCard =
               game.currentPlays.length > 1 ? game.currentPlays[1].card : null;
-            console.log("Lead Card Shifted");
+            // console.log("Lead Card Shifted");
           }
 
           // remove card from current plays and push back to players hand
           const cardPlayed = game.currentPlays.find(
             (p) => p.player.id === socket.id
           )?.card;
-          console.log("leavingPlayer played", cardPlayed?.suit);
+          // console.log("leavingPlayer played", cardPlayed?.suit);
           if (cardPlayed) {
             game.players[gamePlayerIndex].hands.push(cardPlayed);
             game.currentPlays = game.currentPlays.filter(
               (p) => p.player.id !== socket.id
             );
-            console.log(
-              "Card Played Removed Successfully ",
-              game.currentPlays.length
-            );
+            // console.log(
+            //   "Card Played Removed Successfully ",
+            //   game.currentPlays.length
+            // );
           }
 
           // Store gamePlayer in disconnected player object
           const timeOutId = setTimeout(() => {
-            console.log(
-              `Deleted ${
-                pendingReconnectionList[socket.id].player.name
-              } from game, reconnection is impossible`
-            );
+            // console.log(
+            //   `Deleted ${
+            //     pendingReconnectionList[socket.id].player.name
+            //   } from game, reconnection is impossible`
+            // );
             delete pendingReconnectionList[socket.id];
           }, DISCONNECT_TIMEOUT_MS);
 
@@ -134,7 +134,7 @@ function handleDisconnect(
             game.currentPlays.length === room.players.length &&
             game.currentPlays.length >= 2
           ) {
-            console.log("Finish Round From Server");
+            // console.log("Finish Round From Server");
             game.finishRound();
           }
 
@@ -147,10 +147,10 @@ function handleDisconnect(
 
           io.to(roomId).emit("game_state_update", game.getState());
 
-          console.log("Removed player from game", game.players.length);
+          // console.log("Removed player from game", game.players.length);
         }
       } else {
-        console.log("Could not remove player, game not found");
+        // console.log("Could not remove player, game not found");
         io.to(roomId).emit("player_left", {
           userId: socket.id,
           playerName: leavingPlayer?.name || "User",
@@ -160,7 +160,7 @@ function handleDisconnect(
       }
 
       if (room.players.length === 0) {
-        console.log(`Room ${roomId} is empty, deleting.`);
+        // console.log(`Room ${roomId} is empty, deleting.`);
         delete rooms[roomId];
         if (gameInstances[roomId]) {
           delete gameInstances[roomId];
@@ -174,9 +174,9 @@ function handleDisconnect(
           );
           room.players[roomOwnerIndex].status = PlayerStatus.READY;
 
-          console.log(
-            `Ownership of room ${roomId} transferred to ${room.players[0].name} (${room.ownerId})`
-          );
+          // console.log(
+          //   `Ownership of room ${roomId} transferred to ${room.players[0].name} (${room.ownerId})`
+          // );
           io.to(roomId).emit("owner_changed", {
             newOwnerId: room.ownerId,
             updatedPlayers: room.players,
@@ -187,7 +187,7 @@ function handleDisconnect(
       broadcastLobbyUpdate();
     }
   } else {
-    console.log(`Socket ${socket.id} was not in a tracked room.`);
+    // console.log(`Socket ${socket.id} was not in a tracked room.`);
   }
 
   // Clean up any pending join requests from this socket
@@ -219,7 +219,7 @@ function handleReconnection(savedId: string, socket: Socket): void {
     }
   }
 
-  console.log("User reconnecting:", savedId);
+  // console.log("User reconnecting:", savedId);
   const { player, roomId, timeOutId, gameSate } =
     pendingReconnectionList[savedId];
 
@@ -241,10 +241,10 @@ function handleReconnection(savedId: string, socket: Socket): void {
         room.players.push(player);
         socketRoomMap[socket.id] = roomId;
         socket.join(roomId);
-        console.log("Reconnected to room");
+        // console.log("Reconnected to room");
       } else {
         sendReconnectionResponse(socket, "failed", "Room is full");
-        console.log("Reconnection Failed, room is full");
+        // console.log("Reconnection Failed, room is full");
         return;
       }
 
@@ -270,12 +270,12 @@ function handleReconnection(savedId: string, socket: Socket): void {
           game.currentPlays.length === room.players.length &&
           game.currentPlays.length >= 2
         ) {
-          console.log("Finish Round From Server");
+          // console.log("Finish Round From Server");
           game.finishRound();
         }
 
-        console.log("Cards left with player:", 5 - player.hands.length);
-        console.log("CardPlayed: ", game.cardsPlayed);
+        // console.log("Cards left with player:", 5 - player.hands.length);
+        // console.log("CardPlayed: ", game.cardsPlayed);
 
         if (
           JSON.stringify(gameSate) === JSON.stringify(game.getState()) ||
@@ -304,17 +304,17 @@ function handleReconnection(savedId: string, socket: Socket): void {
         io.to(roomId).emit("game_state_update", game.getState());
       }, 2200);
 
-      console.log(`${player.name} (${socket.id}) reconnected to ${roomId}`);
+      // console.log(`${player.name} (${socket.id}) reconnected to ${roomId}`);
       socket.to(roomId).emit("player_reconnected", {
         message: `${player.name} has reconnected`,
       });
     } else {
       sendReconnectionResponse(socket, "failed", "Room no longer exists");
-      console.log("Reconnection Failed, room no longer exists");
+      // console.log("Reconnection Failed, room no longer exists");
     }
   } else {
     sendReconnectionResponse(socket, "failed", "Invalid reconnection data");
-    console.log("Reconnection Failed, invalid reconnection data");
+    // console.log("Reconnection Failed, invalid reconnection data");
   }
 }
 
@@ -359,12 +359,12 @@ function updatePlayerStatus(
   }
 
   // Update player status
-  const previousStatus = room.players[playerIndex].status;
+  // const previousStatus = room.players[playerIndex].status;
   room.players[playerIndex].status = newStatus;
 
-  console.log(
-    `Player ${room.players[playerIndex].name} status changed from ${previousStatus} to ${newStatus}`
-  );
+  // console.log(
+  //   `Player ${room.players[playerIndex].name} status changed from ${previousStatus} to ${newStatus}`
+  // );
 
   // Notify all players in the room about status change
   io.to(roomId).emit("player_status_changed", {
@@ -391,7 +391,7 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("reconnection", ({ savedId }: { savedId: string }) => {
-    console.log("User tried to reconnect with ", savedId);
+    // console.log("User tried to reconnect with ", savedId);
     handleReconnection(savedId, socket);
   });
 
@@ -449,7 +449,7 @@ io.on("connection", (socket: Socket) => {
       socket.join(roomId);
       socketRoomMap[socket.id] = roomId;
 
-      console.log(`Room ${roomId} created by ${playerName} (${socket.id})`);
+      // console.log(`Room ${roomId} created by ${playerName} (${socket.id})`);
       socket.emit("room_created", { roomId: roomId, room: rooms[roomId] });
       broadcastLobbyUpdate();
     }
@@ -521,7 +521,7 @@ io.on("connection", (socket: Socket) => {
         timeoutId,
       };
 
-      console.log(`Join request ${requestId} sent to room owner for ${roomId}`);
+      // console.log(`Join request ${requestId} sent to room owner for ${roomId}`);
     }
   );
 
@@ -567,9 +567,9 @@ io.on("connection", (socket: Socket) => {
           userSocket.join(request.roomId);
           socketRoomMap[request.userId] = request.roomId;
 
-          console.log(
-            `${joiningPlayer.name} (${request.userId}) joined room ${request.roomId}`
-          );
+          // console.log(
+          //   `${joiningPlayer.name} (${request.userId}) joined room ${request.roomId}`
+          // );
 
           userSocket.emit("room_created", {
             roomId: request.roomId,
@@ -615,14 +615,14 @@ io.on("connection", (socket: Socket) => {
     const playerToKickSocket = io.sockets.sockets.get(playerToKickId);
     const roomId = socketRoomMap[socket.id];
     const room = rooms[roomId];
-    const player = room.players.find((p) => p.id === playerToKickId);
+    // const player = room.players.find((p) => p.id === playerToKickId);
 
     if (!playerToKickSocket || room.ownerId !== socket.id) return;
     handleDisconnect(playerToKickSocket);
     io.to(playerToKickId).emit("player_kicked", {
       message: `You have been kicked from the room`,
     });
-    console.log(`${player?.name} has been kicked from room ${roomId}`);
+    // console.log(`${player?.name} has been kicked from room ${roomId}`);
   });
 
   // Listener: Leave a room
@@ -653,7 +653,7 @@ io.on("connection", (socket: Socket) => {
         }
 
         room.status = "playing";
-        console.log(`Game starting in room ${roomId}`);
+        // console.log(`Game starting in room ${roomId}`);
 
         // Update player statuses to IN_GAME
         room.players.forEach((player) => {
@@ -718,7 +718,7 @@ io.on("connection", (socket: Socket) => {
 
         updatePlayerStatus(socket, roomId, player.id, newStatus, true);
       });
-      console.log("Room Has Been Set To Waiting");
+      // console.log("Room Has Been Set To Waiting");
     }
   });
 
@@ -726,7 +726,7 @@ io.on("connection", (socket: Socket) => {
   socket.on(
     "play_card",
     ({ roomId, playerId, card, cardIndex }: PlayCardPayload) => {
-      console.log(`Player ${playerId} played card ${card} in room ${roomId}`);
+      // console.log(`Player ${playerId} played card ${card} in room ${roomId}`);
       const game = gameInstances[roomId];
       if (game) {
         // Ensure the player ID matches what's expected in the game (playerId can be string or number)
