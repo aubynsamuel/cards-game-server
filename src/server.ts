@@ -76,8 +76,7 @@ function handleDisconnect(
         if (gamePlayerIndex !== -1) {
           // Adjust game state for the other players
           if (
-            game.currentControl.id === socket.id &&
-            room.players.length >= 2
+            game.currentControl.id === socket.id
           ) {
             //  transfer current control to next player
             game.currentControl =
