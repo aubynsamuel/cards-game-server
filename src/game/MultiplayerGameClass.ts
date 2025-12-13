@@ -10,7 +10,7 @@ import {
   Callbacks,
   GameOverData,
   CardsGameState,
-} from "./GameTypes";
+} from "../types/GameTypes";
 
 class MultiplayerCardsGame implements CardsGameState {
   players: Player[];
@@ -58,8 +58,8 @@ class MultiplayerCardsGame implements CardsGameState {
     this.currentControl = players[0];
     this.deck = [];
     this.callbacks = {
-      onStateChange: () => {},
-      onRoundFinished: () => {},
+      onStateChange: () => { },
+      onRoundFinished: () => { },
     };
     this.gameOverData = {
       winner: this.players[0],
