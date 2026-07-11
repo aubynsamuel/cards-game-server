@@ -4,3 +4,6 @@ npm-debug.log
 dist
 .idea
 .vscode
+service-account*.json
+firebase-adminsdk*.json
+serviceAccountKey*

@@ -10,6 +10,8 @@ A Socket.io based server for a real-time multiplayer card game, Card Masters.
 - In-game chat functionality
 - Room management (kick players, transfer ownership)
 - Game state synchronization across clients
+- Firebase-authenticated socket sessions
+- Server-authoritative multiplayer game record persistence
 
 ## Client Application
 
@@ -31,7 +33,13 @@ This server is designed to work with the React Native client application. The cl
    yarn install
    ```
 
-3. Start the server:
+3. Configure Firebase Admin using Application Default Credentials. For local
+   development, copy `.env.example` to `.env` and point
+   `GOOGLE_APPLICATION_CREDENTIALS` to a service-account key stored outside the
+   repository. On Google-hosted infrastructure, use the attached service
+   account instead of a downloaded key.
+
+4. Start the server:
 
    ```bash
    yarn dev
@@ -53,6 +61,7 @@ The server manages game rooms, player connections, and game state. Players can:
 - TypeScript
 - Socket.io
 - HTTP
+- Firebase Admin SDK
 
 ## License
 

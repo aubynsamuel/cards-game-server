@@ -20,9 +20,28 @@ interface GameScore {
 interface Player {
   name: string;
   id: string;
+  userId?: string;
   hands: Card[];
   score: number;
   status?: PlayerStatus; // Added status field
+}
+
+interface GameRecordPlayer {
+  id: string;
+  name: string;
+  finalScore: number;
+  position: number;
+}
+
+interface GameRecord {
+  gameId: string;
+  dateString: string;
+  targetScore: number;
+  playerCount: number;
+  mode: "multiplayer" | "single-player";
+  players: GameRecordPlayer[];
+  winnerId: string;
+  winnerName: string;
 }
 
 interface Play {
@@ -180,4 +199,6 @@ export {
   PlayerJoinedPayload,
   PlayerLeftPayload,
   validPlay,
+  GameRecord,
+  GameRecordPlayer,
 };

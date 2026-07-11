@@ -88,7 +88,14 @@ interface JoinRequest {
   userId: string;
   playerName: string;
   roomId: string;
+  requesterSocketId: string;
+  authenticatedUserId?: string;
   timeoutId: NodeJS.Timeout;
+}
+
+interface GameRecordSavedPayload {
+  gameId: string;
+  saved: boolean;
 }
 interface ReconnectionData {
   player: Player;
@@ -112,4 +119,5 @@ export {
   JoinRequest,
   Message,
   ReconnectionData,
+  GameRecordSavedPayload,
 };
