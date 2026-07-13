@@ -12,29 +12,25 @@ const server = http.createServer((req, res) => {
 });
 
 // Helper to parse allowed origins from env (comma-separated)
-const getAllowedOrigins = () => {
-  const origins = process.env.ALLOWED_ORIGINS;
-  if (!origins) return [];
-  return origins.split(",").map((origin) => origin.trim());
-};
+// const getAllowedOrigins = () => {
+//   const origins = process.env.ALLOWED_ORIGINS;
+//   if (!origins) return [];
+//   return origins.split(",").map((origin) => origin.trim());
+// };
 
-const allowedOrigins = getAllowedOrigins();
+// const allowedOrigins = getAllowedOrigins();
 
 const io = new Server(server, {
-  cors: {
-    origin: (origin, callback) => {
-      if (
-        !origin ||
-        allowedOrigins.length === 0 ||
-        allowedOrigins.includes(origin)
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST"],
-  },
+  // cors: {
+  //   origin: (origin, callback) => {
+  //     if (!origin || allowedOrigins.includes(origin)) {
+  //       callback(null, true);
+  //     } else {
+  //       callback(new Error("Not allowed by CORS"));
+  //     }
+  //   },
+  //   methods: ["GET", "POST"],
+  // },
   pingTimeout: 5000,
   pingInterval: 6000,
 });
